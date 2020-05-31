@@ -108,9 +108,10 @@ USE_L10N = True
 USE_TZ = True
 
 LOGIN_URL = 'login'
-# LOGOUT_URL = 'logout'
+LOGOUT_URL = 'logout'
 
 LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
 
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
@@ -120,7 +121,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend' 
 EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'devbryan254@gmail.com'
-EMAIL_HOST_PASSWORD =  'qddoiifvixifdiud' 
+EMAIL_HOST_USER = 'ochiengbrian250@gmail.com'
+EMAIL_HOST_PASSWORD =  'vgtgbzdiawvmlnde' 
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True

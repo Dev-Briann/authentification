@@ -14,7 +14,8 @@ from django.template.loader import render_to_string
 from .tokens import account_activation_token
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
-
+from django.views.generic import View
+from django.contrib import messages
 
 def login_view(request):
     form = LoginForm(request.POST or None)
@@ -32,42 +33,55 @@ def login_view(request):
 
 
 
+
+
 def register_view(request):
     User = get_user_model()
     if request.method == 'POST':
-        form = RegisterForm(request.POST)
+        form = CustomUserRegistration(request.POST or None)
         if form.is_valid():
                 user = form.save(commit=False)
-                user.is_active = False
+                
                 user.save()
                 current_site = get_current_site(request)
                 mail_subject = 'Activate your account.'
                 message = render_to_string('confirm_email.html', {
                             'user': user,
                             'domain': current_site.domain,
-                            'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                            'uid': urlsafe_base64_encode(force_bytes(user.pk)).decode(),
                             'token': account_activation_token.make_token(user),
                         })
                 to_email = form.cleaned_data.get('email')
-                send_mail(mail_subject, message, 'ogingabrian2017@gmail.com', [to_email])
-                return HttpResponse('Please confirm your email address to complete the registration')
+                send_mail(mail_subject, message, 'devbryan254@gmail.com', [to_email])
+                return render(request,'email_redirect.html',{})
+                return redirect('home')
     else:
-        form = RegisterForm()
+        form = CustomUserRegistration()
     return render(request, 'register.html', {'form': form})
 
-def activate(request, uidb64, token):
-    User = get_user_model()
-    try:
-        uid = force_text(urlsafe_base64_decode(uidb64))
-        user = User.objects.get(pk=uid)
-    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
-        user = None
-    if user is not None and account_activation_token.check_token(user, token):
-        user.is_active = True
-        user.save()
-        return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
-    else:
-        return HttpResponse('Activation link is invalid!')
+
+
+
+
+
+class ActivateAccount(View):
+    
+    def get(self, request, uidb64, token, *args, **kwargs):
+        try:
+            uid = force_text(urlsafe_base64_decode(uidb64))
+            user = User.objects.get(pk=uid)
+        except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+            user = None
+
+        if user is not None and account_activation_token.check_token(user, token):
+            user.is_active = True
+            user.save()
+            # login(request, user)
+            return render(request,'confirm_sucess.html',{})
+            return redirect('home')
+        else:
+            return render(request,'confirm_error.html',{})
+            return redirect('home')
 
 def logout_view(request):
     logout(request)
