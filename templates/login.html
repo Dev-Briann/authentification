@@ -14,5 +14,29 @@
        
     </form>
     <a href="{% url 'register' %}">Register</a>
+    <script
+    src="https://code.jquery.com/jquery-1.12.4.min.js"
+    integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ="
+    crossorigin="anonymous"></script>
+
+    <script>
+        $("#id_username").change(function () {
+          var username = $(this).val();
+    
+          $.ajax({
+            url: '/ajax/validate_username/',
+            data: {
+              'username': username
+            },
+            dataType: 'json',
+            success: function (data) {
+              if (data.is_taken) {
+                alert("A user with this username already exists.");
+              }
+            }
+          });
+    
+        });
+      </script>
 </body>
 </html>

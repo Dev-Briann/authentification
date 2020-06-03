@@ -16,6 +16,8 @@ from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.views.generic import View
 from django.contrib import messages
+from django.http import JsonResponse
+
 
 def login_view(request):
     form = LoginForm(request.POST or None)
@@ -41,7 +43,7 @@ def register_view(request):
         form = CustomUserRegistration(request.POST or None)
         if form.is_valid():
                 user = form.save(commit=False)
-                
+                user.is_active = False
                 user.save()
                 current_site = get_current_site(request)
                 mail_subject = 'Activate your account.'
@@ -62,6 +64,13 @@ def register_view(request):
 
 
 
+def validate_username(request):
+    username = request.get.GET('username')
+    email_qs = User.objects.filter(username__icontains=username).exists
+
+
+    
+    return JsonResponse
 
 
 class ActivateAccount(View):
